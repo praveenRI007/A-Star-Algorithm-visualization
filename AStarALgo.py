@@ -11,7 +11,7 @@ WIDTH = 20
 HEIGHT = 20
 
 # This sets the margin between each cell
-MARGIN = 5
+MARGIN = 1
 
 # Initialize pygame
 pygame.init()
@@ -21,7 +21,7 @@ WINDOW_SIZE = [1200, 700]
 screen = pygame.display.set_mode(WINDOW_SIZE)
 
 # Set title of screen
-pygame.display.set_caption("Chess Game")
+pygame.display.set_caption("A Star Algorithm")
 
 # Loop until the user clicks the close button.
 done = False
@@ -45,8 +45,8 @@ def getMinimumforDiscoveredList():
 def calc_manhattan_distance_h(x, y):
     return math.sqrt((abs(x-End[0]))**2 + (abs(y-End[1]))**2)
 
-gh = 28
-gw = 48
+gh = 33
+gw = 57
 
 TileTracker = [ [None]*gw for i in range(gh)]
 
@@ -284,6 +284,231 @@ def updatenearbyscores(x,y):
     # while not Found:
     #     pass#KeepDiscovering()
 
+def updatenearbyscores_ignoring_corners(x,y):
+    global Found
+    global DiscoveredTrackerToBeSearched
+
+    #left
+    if (y-1) >= 0 and (y-1)<gw:
+        temp_g = 1
+        temp_h = calc_manhattan_distance_h(x,y-1)
+
+        #for undiscovered cells
+        if  TileTracker[x][y-1].g == None and  TileTracker[x][y-1].h == None:
+
+            if TileTracker[x][y-1].IsFinish:
+                Found = True
+
+            elif not TileTracker[x][y-1].isStart and not TileTracker[x][y-1].isBlock:
+                if TileTracker[x][y].g != None:
+                    TileTracker[x][y - 1].g = temp_g + TileTracker[x][y].g
+                else:
+                    TileTracker[x][y - 1].g = temp_g
+
+                TileTracker[x][y - 1].h = temp_h
+                TileTracker[x][y - 1].Score = round(TileTracker[x][y - 1].g + TileTracker[x][y - 1].h,1)
+                TileTracker[x][y - 1].Discovered = True
+                DiscoveredTrackerToBeSearched.append(TileTracker[x][y - 1])
+        else:
+            #for discovered cells : check score if its less then update the optimum score
+            if ((temp_g+TileTracker[x][y].g)<TileTracker[x][y-1].g):
+                TileTracker[x][y-1].g = temp_g + TileTracker[x][y].g
+                TileTracker[x][y-1].Score = round(TileTracker[x][y-1].g + TileTracker[x][y-1].h,1)
+
+
+
+
+    #right
+    if (y+1) >= 0 and (y+1)<gw:
+        temp_g = 1
+        temp_h = calc_manhattan_distance_h(x, y+1)
+
+        # for undiscovered cells
+        if TileTracker[x][y+1].g == None and TileTracker[x][y+1].h == None:
+
+            if TileTracker[x][y+1].IsFinish:
+                Found = True
+
+            elif not TileTracker[x][y+1].isStart and not TileTracker[x][y+1].isBlock:
+                if TileTracker[x][y].g != None:
+                    TileTracker[x][y + 1].g = temp_g + TileTracker[x][y].g
+                else:
+                    TileTracker[x][y + 1].g = temp_g
+                TileTracker[x][y + 1].h = temp_h
+                TileTracker[x][y + 1].Score = round(TileTracker[x][y + 1].g + TileTracker[x][y + 1].h,1)
+                TileTracker[x][y + 1].Discovered = True
+                DiscoveredTrackerToBeSearched.append(TileTracker[x][y + 1])
+
+        else:
+            # for discovered cells : check score if its less then update the optimum score
+            if ((temp_g + TileTracker[x][y].g) < TileTracker[x][y+1].g):
+                TileTracker[x][y+1].g = temp_g + TileTracker[x][y].g
+                TileTracker[x][y+1].Score = round(TileTracker[x][y+1].g + TileTracker[x][y+1].h,1)
+
+
+    #top left
+    if (x-1) >= 0 and (x-1)<gh and (y-1)>=0 and (y-1)<gw:
+        temp_g = math.sqrt(2)
+        temp_h = calc_manhattan_distance_h(x-1, y-1)
+
+        # for undiscovered cells
+        if TileTracker[x-1][y-1].g == None and TileTracker[x-1][y-1].h == None and not TileTracker[x-1][y].isBlock and not TileTracker[x][y-1].isBlock:
+            if TileTracker[x-1][y-1].IsFinish:
+                Found = True
+            elif not TileTracker[x-1][y-1].isStart and not TileTracker[x-1][y-1].isBlock:
+                if TileTracker[x][y].g != None:
+                    TileTracker[x - 1][y - 1].g = temp_g + TileTracker[x][y].g
+                else:
+                    TileTracker[x - 1][y - 1].g = temp_g
+
+                TileTracker[x - 1][y - 1].h = temp_h
+                TileTracker[x - 1][y - 1].Score = round(TileTracker[x - 1][y - 1].g + TileTracker[x - 1][y - 1].h,1)
+                TileTracker[x - 1][y - 1].Discovered = True
+                DiscoveredTrackerToBeSearched.append(TileTracker[x - 1][y - 1])
+        else:
+            # for discovered cells : check score if its less then update the optimum score
+            if not TileTracker[x - 1][y].isBlock and not TileTracker[x][y - 1].isBlock:
+                if ((temp_g + TileTracker[x][y].g) < TileTracker[x-1][y-1].g):
+                    TileTracker[x-1][y-1].g = temp_g + TileTracker[x][y].g
+                    TileTracker[x-1][y-1].Score = round(TileTracker[x-1][y-1].g + TileTracker[x-1][y-1].h,1)
+        print(TileTracker[x-1][y-1].Score)
+
+    #top right
+    if (x-1) >= 0 and (x-1)<gh and (y+1)>=0 and (y+1)<gw:
+        temp_g = math.sqrt(2)
+        temp_h = calc_manhattan_distance_h(x - 1, y + 1)
+
+        # for undiscovered cells
+        if TileTracker[x - 1][y + 1].g == None and TileTracker[x - 1][y + 1].h == None and not TileTracker[x - 1][y].isBlock and not TileTracker[x][y + 1].isBlock:
+            if TileTracker[x - 1][y + 1].IsFinish:
+                Found = True
+            elif not TileTracker[x - 1][y + 1].isStart and not TileTracker[x - 1][y + 1].isBlock:
+                if TileTracker[x][y].g != None:
+                    TileTracker[x - 1][y + 1].g = temp_g + TileTracker[x][y].g
+                else:
+                    TileTracker[x - 1][y + 1].g = temp_g
+
+                TileTracker[x - 1][y + 1].h = temp_h
+                TileTracker[x - 1][y + 1].Score = round(TileTracker[x - 1][y + 1].g + TileTracker[x - 1][y + 1].h,1)
+                TileTracker[x - 1][y + 1].Discovered = True
+                DiscoveredTrackerToBeSearched.append(TileTracker[x - 1][y + 1])
+        else:
+            # for discovered cells : check score if its less then update the optimum score
+            if not TileTracker[x - 1][y].isBlock and not TileTracker[x][y + 1].isBlock:
+                if ((temp_g + TileTracker[x][y].g) < TileTracker[x - 1][y + 1].g):
+                    TileTracker[x - 1][y + 1].g = temp_g + TileTracker[x][y].g
+                    TileTracker[x - 1][y + 1].Score = round(TileTracker[x - 1][y + 1].g + TileTracker[x - 1][y + 1].h,1)
+        print(TileTracker[x - 1][y + 1].Score)
+
+    #top
+    if (x-1) >= 0 and (x-1)<gh:
+        temp_g = 1
+        temp_h = calc_manhattan_distance_h(x - 1,y)
+
+        # for undiscovered cells
+        if TileTracker[x - 1][y].g == None and TileTracker[x - 1][y].h == None:
+            if TileTracker[x - 1][y].IsFinish:
+                Found = True
+            elif not TileTracker[x - 1][y].isStart and not TileTracker[x - 1][y].isBlock:
+                if TileTracker[x][y].g != None:
+                    TileTracker[x - 1][y].g = temp_g + TileTracker[x][y].g
+                else:
+                    TileTracker[x - 1][y].g = temp_g
+                TileTracker[x - 1][y].h = temp_h
+                TileTracker[x - 1][y].Score = round(TileTracker[x - 1][y].g + TileTracker[x - 1][y].h,1)
+                TileTracker[x - 1][y].Discovered = True
+                DiscoveredTrackerToBeSearched.append(TileTracker[x - 1][y])
+        else:
+            # for discovered cells : check score if its less then update the optimum score
+            if ((temp_g + TileTracker[x][y].g) < TileTracker[x - 1][y].g):
+                TileTracker[x - 1][y].g = temp_g + TileTracker[x][y].g
+                TileTracker[x - 1][y].Score = TileTracker[x - 1][y].g + TileTracker[x - 1][y].h
+        print(TileTracker[x - 1][y].Score)
+
+    #bottom
+    if (x+1) >= 0 and (x+1)<gh:
+        temp_g = 1
+        temp_h = calc_manhattan_distance_h(x + 1, y)
+
+        # for undiscovered cells
+        if TileTracker[x + 1][y].g == None and TileTracker[x + 1][y].h == None:
+            if TileTracker[x + 1][y].IsFinish:
+                Found = True
+            elif not TileTracker[x + 1][y].isStart and not TileTracker[x + 1][y].isBlock:
+                if TileTracker[x][y].g != None:
+                    TileTracker[x + 1][y].g = temp_g + TileTracker[x][y].g
+                else:
+                    TileTracker[x + 1][y].g = temp_g
+                TileTracker[x + 1][y].h = temp_h
+                TileTracker[x + 1][y].Score = round(TileTracker[x + 1][y].g + TileTracker[x + 1][y].h,1)
+                TileTracker[x + 1][y].Discovered = True
+                DiscoveredTrackerToBeSearched.append(TileTracker[x + 1][y])
+        else:
+            # for discovered cells : check score if its less then update the optimum score
+            if ((temp_g + TileTracker[x][y].g) < TileTracker[x + 1][y].g):
+                TileTracker[x + 1][y].g = temp_g + TileTracker[x][y].g
+                TileTracker[x + 1][y].Score = round(TileTracker[x + 1][y].g + TileTracker[x + 1][y].h,1)
+        print(TileTracker[x + 1][y].Score)
+
+    #bottom left
+    if (x+1) >= 0 and (x+1)<gh and (y-1)>=0 and (y-1)<gw:
+        temp_g = math.sqrt(2)
+        temp_h = calc_manhattan_distance_h(x + 1, y - 1)
+
+        # for undiscovered cells
+        if TileTracker[x + 1][y - 1].g == None and TileTracker[x + 1][y - 1].h == None and not TileTracker[x + 1][y].isBlock and not TileTracker[x][y - 1].isBlock:
+            if TileTracker[x + 1][y - 1].IsFinish:
+                Found = True
+            elif not TileTracker[x + 1][y - 1].isStart and not TileTracker[x + 1][y - 1].isBlock:
+                if TileTracker[x][y].g != None:
+                    TileTracker[x + 1][y - 1].g = temp_g = temp_g + TileTracker[x][y].g
+                else:
+                    TileTracker[x + 1][y - 1].g = temp_g
+                TileTracker[x + 1][y - 1].h = temp_h
+                TileTracker[x + 1][y - 1].Score = round(TileTracker[x + 1][y - 1].g + TileTracker[x + 1][y - 1].h,1)
+                TileTracker[x + 1][y - 1].Discovered = True
+                DiscoveredTrackerToBeSearched.append(TileTracker[x + 1][y - 1])
+        else:
+            # for discovered cells : check score if its less then update the optimum score
+            if not TileTracker[x + 1][y].isBlock and not TileTracker[x][y - 1].isBlock:
+                if ((temp_g + TileTracker[x][y].g) < TileTracker[x + 1][y - 1].g):
+                    TileTracker[x + 1][y - 1].g = temp_g + TileTracker[x][y].g
+                    TileTracker[x + 1][y - 1].Score = round(TileTracker[x + 1][y - 1].g + TileTracker[x + 1][y - 1].h,1)
+        print(TileTracker[x + 1][y - 1].Score)
+
+    #bottom right
+
+    if (x+1) >= 0 and (x+1)<gh and (y+1)>=0 and (y+1)<gw:
+        temp_g = math.sqrt(2)
+        temp_h = calc_manhattan_distance_h(x + 1, y + 1)
+
+        # for undiscovered cells
+        if TileTracker[x + 1][y + 1].g == None and TileTracker[x + 1][y + 1].h == None and not TileTracker[x][y + 1].isBlock and not TileTracker[x + 1][y].isBlock:
+            if TileTracker[x+1][y+1].IsFinish:
+                Found = True
+            elif not TileTracker[x+1][y+1].isStart and not TileTracker[x+1][y+1].isBlock:
+                if TileTracker[x][y].g != None:
+                    TileTracker[x + 1][y + 1].g = temp_g + TileTracker[x][y].g
+                else:
+                    TileTracker[x + 1][y + 1].g = temp_g
+
+                TileTracker[x + 1][y + 1].h = temp_h
+                TileTracker[x + 1][y + 1].Score = round(TileTracker[x + 1][y + 1].g + TileTracker[x + 1][y + 1].h,1)
+                TileTracker[x + 1][y + 1].Discovered = True
+                DiscoveredTrackerToBeSearched.append(TileTracker[x + 1][y + 1])
+        else:
+            # for discovered cells : check score if its less then update the optimum score
+            if not TileTracker[x][y + 1].isBlock and not TileTracker[x + 1][y].isBlock:
+                if ((temp_g + TileTracker[x][y].g) < TileTracker[x + 1][y + 1].g):
+                    TileTracker[x + 1][y + 1].g = temp_g + TileTracker[x][y].g
+                    TileTracker[x + 1][y + 1].Score = round(TileTracker[x + 1][y + 1].g + TileTracker[x + 1][y + 1].h,1)
+        print(TileTracker[x + 1][y + 1].Score)
+
+    TileTracker[x][y].isSearched = True
+
+    # while not Found:
+    #     pass#KeepDiscovering()
+
 BackTrackDone = False
 def UpdateBackTracking(x,y):
     BackTrackList = []
@@ -375,7 +600,8 @@ while not done:
             minA = getMinimumforDiscoveredList()
             for i in range(0,len(tempDC)):
                 if tempDC[i].Score == minA and tempDC[i].isSearched == False:
-                    updatenearbyscores(tempDC[i].x, tempDC[i].y)
+                    #updatenearbyscores(tempDC[i].x, tempDC[i].y)
+                    updatenearbyscores_ignoring_corners(tempDC[i].x, tempDC[i].y)
                     tempD += 1
             l = 0
             while tempD>0:
@@ -389,7 +615,8 @@ while not done:
             if count == 1:
                 print('cannot reach destination ! its blocked')
             else:
-                updatenearbyscores(Start[0],Start[1])
+                #updatenearbyscores(Start[0],Start[1])
+                updatenearbyscores_ignoring_corners(Start[0],Start[1])
                 count = 1
 
     # backtracking
@@ -476,7 +703,8 @@ while not done:
                         minA = getMinimumforDiscoveredList()
                         for i in range(0, len(tempDC)):
                             if tempDC[i].Score == minA and tempDC[i].isSearched == False:
-                                updatenearbyscores(tempDC[i].x, tempDC[i].y)
+                                #updatenearbyscores(tempDC[i].x, tempDC[i].y)
+                                updatenearbyscores_ignoring_corners(tempDC[i].x, tempDC[i].y)
                                 tempD += 1
                         l = 0
                         while tempD > 0:
@@ -491,7 +719,8 @@ while not done:
                         if count == 1:
                             print('cannot reach destination ! its blocked')
                         else:
-                            updatenearbyscores(Start[0], Start[1])
+                            #updatenearbyscores(Start[0], Start[1])
+                            updatenearbyscores_ignoring_corners(Start[0], Start[1])
                             count = 1
             if event.key == pygame.K_r:
                 TileTracker = [[None] * gw for i in range(gh)]
