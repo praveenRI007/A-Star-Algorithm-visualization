@@ -284,60 +284,68 @@ def updatenearbyscores(x,y):
     # while not Found:
     #     pass#KeepDiscovering()
 
-
+BackTrackDone = False
 def UpdateBackTracking(x,y):
     BackTrackList = []
     global LastBackTracked
     #left
     if (y-1)>=0 and (y-1)<gw and TileTracker[x][y-1].isStart:
+        BackTrackDone = True
         return
     if (y-1)>=0 and (y-1)<gw and TileTracker[x][y-1].isSearched == True:
         BackTrackList.append(TileTracker[x][y-1])
     #right
     if (y+1)>=0 and (y+1)<gw and TileTracker[x][y+1].isStart:
+        BackTrackDone = True
         return
     if (y+1)>=0 and (y+1)<gw and TileTracker[x][y+1].isSearched == True:
         BackTrackList.append(TileTracker[x][y+1])
     #top
     if (x-1)>=0 and (x-1)<gh and TileTracker[x-1][y].isStart:
+        BackTrackDone = True
         return
     if (x-1)>=0 and (x-1)<gh and TileTracker[x-1][y].isSearched == True:
         BackTrackList.append(TileTracker[x-1][y])
 
     #topleft
     if (x-1)>=0 and (x-1)<gh and (y-1)>=0 and (y-1)<gw and TileTracker[x-1][y-1].isStart:
+        BackTrackDone = True
         return
     if (x-1)>=0 and (x-1)<gh and (y-1)>=0 and (y-1)<gw and TileTracker[x-1][y-1].isSearched == True:
         BackTrackList.append(TileTracker[x-1][y-1])
 
     #topright
     if (x-1)>=0 and (x-1)<gh and (y+1)>=0 and (y+1)<gw and TileTracker[x-1][y+1].isStart:
+        BackTrackDone = True
         return
     if (x-1)>=0 and (x-1)<gh and (y+1)>=0 and (y+1)<gw and TileTracker[x-1][y+1].isSearched == True:
         BackTrackList.append(TileTracker[x-1][y+1])
 
     #bottom
     if (x+1)>=0 and (x+1)<gh and TileTracker[x+1][y].isStart:
+        BackTrackDone = True
         return
     if (x+1)>=0 and (x+1)<gh and TileTracker[x+1][y].isSearched == True:
         BackTrackList.append(TileTracker[x+1][y])
 
     #bottomleft
     if (x+1)>=0 and (x+1)<gh and (y-1)>=0 and (y-1)<gw and TileTracker[x+1][y-1].isStart:
+        BackTrackDone = True
         return
     if (x+1)>=0 and (x+1)<gh and (y-1)>=0 and (y-1)<gw and TileTracker[x+1][y-1].isSearched == True:
         BackTrackList.append(TileTracker[x+1][y-1])
 
     #bottomright
     if (x+1)>=0 and (x+1)<gh and (y+1)>=0 and (y+1)<gw and TileTracker[x+1][y+1].isStart:
+        BackTrackDone = True
         return
     if (x+1)>=0 and (x+1)<gh and (y+1)>=0 and (y+1)<gw and TileTracker[x+1][y+1].isSearched == True:
         BackTrackList.append(TileTracker[x+1][y+1])
 
-    minE = min([i.Score for i in BackTrackList])
+    minE = min([i.Score for i in BackTrackList if i.IsBacktracked == False])
 
     for j in BackTrackList:
-        if j.Score == minE:
+        if j.Score == minE and j.IsBacktracked == False:
             TileTracker[j.x][j.y].IsBacktracked = True
             LastBackTracked = [j.x,j.y]
             return
@@ -385,7 +393,7 @@ while not done:
                 count = 1
 
     # backtracking
-    if Found:
+    if Found and not BackTrackDone:
         if LastBackTracked == None:
             UpdateBackTracking(End[0],End[1])
         else:
@@ -485,6 +493,19 @@ while not done:
                         else:
                             updatenearbyscores(Start[0], Start[1])
                             count = 1
+            if event.key == pygame.K_r:
+                TileTracker = [[None] * gw for i in range(gh)]
+                Start = None
+                End = None
+                Found = False
+                SearchStarted = False
+                DiscoveredTrackerToBeSearched = []
+                count = 0
+                LastBackTracked = None
+                BackTrackDone = False
+                for row in range(gh):
+                    for column in range(gw):
+                        TileTracker[row][column] = Tile(row, column)
 
         elif event.type == pygame.MOUSEMOTION:
             if IsdrawingBlocks:
