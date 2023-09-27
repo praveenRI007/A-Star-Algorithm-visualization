@@ -17,7 +17,7 @@ MARGIN = 1
 pygame.init()
 
 # Set the HEIGHT and WIDTH of the screen
-WINDOW_SIZE = [1200, 700]
+WINDOW_SIZE = [1400, 800]
 screen = pygame.display.set_mode(WINDOW_SIZE)
 
 # Set title of screen
@@ -45,8 +45,8 @@ def getMinimumforDiscoveredList():
 def calc_manhattan_distance_h(x, y):
     return math.sqrt((abs(x-End[0]))**2 + (abs(y-End[1]))**2)
 
-gh = 33
-gw = 57
+gh = 37
+gw = 66
 
 TileTracker = [ [None]*gw for i in range(gh)]
 
@@ -575,6 +575,75 @@ def UpdateBackTracking(x,y):
             LastBackTracked = [j.x,j.y]
             return
 
+def UpdateBackTracking_ignoring_corners(x,y):
+    BackTrackList = []
+    global LastBackTracked
+    #left
+    if (y-1)>=0 and (y-1)<gw and TileTracker[x][y-1].isStart:
+        BackTrackDone = True
+        return
+    if (y-1)>=0 and (y-1)<gw and TileTracker[x][y-1].isSearched == True:
+        BackTrackList.append(TileTracker[x][y-1])
+    #right
+    if (y+1)>=0 and (y+1)<gw and TileTracker[x][y+1].isStart:
+        BackTrackDone = True
+        return
+    if (y+1)>=0 and (y+1)<gw and TileTracker[x][y+1].isSearched == True:
+        BackTrackList.append(TileTracker[x][y+1])
+    #top
+    if (x-1)>=0 and (x-1)<gh and TileTracker[x-1][y].isStart:
+        BackTrackDone = True
+        return
+    if (x-1)>=0 and (x-1)<gh and TileTracker[x-1][y].isSearched == True:
+        BackTrackList.append(TileTracker[x-1][y])
+
+    #topleft
+    if (x-1)>=0 and (x-1)<gh and (y-1)>=0 and (y-1)<gw and TileTracker[x-1][y-1].isStart:
+        BackTrackDone = True
+        return
+    if (x-1)>=0 and (x-1)<gh and (y-1)>=0 and (y-1)<gw and TileTracker[x-1][y-1].isSearched == True:
+        if not TileTracker[x-1][y].isBlock and not TileTracker[x][y-1].isBlock:
+            BackTrackList.append(TileTracker[x-1][y-1])
+
+    #topright
+    if (x-1)>=0 and (x-1)<gh and (y+1)>=0 and (y+1)<gw and TileTracker[x-1][y+1].isStart:
+        BackTrackDone = True
+        return
+    if (x-1)>=0 and (x-1)<gh and (y+1)>=0 and (y+1)<gw and TileTracker[x-1][y+1].isSearched == True:
+        if not TileTracker[x-1][y].isBlock and not TileTracker[x][y+1].isBlock :
+            BackTrackList.append(TileTracker[x-1][y+1])
+
+    #bottom
+    if (x+1)>=0 and (x+1)<gh and TileTracker[x+1][y].isStart:
+        BackTrackDone = True
+        return
+    if (x+1)>=0 and (x+1)<gh and TileTracker[x+1][y].isSearched == True:
+        BackTrackList.append(TileTracker[x+1][y])
+
+    #bottomleft
+    if (x+1)>=0 and (x+1)<gh and (y-1)>=0 and (y-1)<gw and TileTracker[x+1][y-1].isStart:
+        BackTrackDone = True
+        return
+    if (x+1)>=0 and (x+1)<gh and (y-1)>=0 and (y-1)<gw and TileTracker[x+1][y-1].isSearched == True:
+        if not TileTracker[x][y-1].isBlock and not TileTracker[x+1][y].isBlock:
+            BackTrackList.append(TileTracker[x+1][y-1])
+
+    #bottomright
+    if (x+1)>=0 and (x+1)<gh and (y+1)>=0 and (y+1)<gw and TileTracker[x+1][y+1].isStart:
+        BackTrackDone = True
+        return
+    if (x+1)>=0 and (x+1)<gh and (y+1)>=0 and (y+1)<gw and TileTracker[x+1][y+1].isSearched == True:
+        if not TileTracker[x+1][y].isBlock and not TileTracker[x][y+1].isBlock:
+            BackTrackList.append(TileTracker[x+1][y+1])
+
+    minE = min([i.Score for i in BackTrackList if i.IsBacktracked == False])
+
+    for j in BackTrackList:
+        if j.Score == minE and j.IsBacktracked == False:
+            TileTracker[j.x][j.y].IsBacktracked = True
+            LastBackTracked = [j.x,j.y]
+            return
+
 
 
 
@@ -622,9 +691,11 @@ while not done:
     # backtracking
     if Found and not BackTrackDone:
         if LastBackTracked == None:
-            UpdateBackTracking(End[0],End[1])
+            #UpdateBackTracking(End[0],End[1])
+            UpdateBackTracking_ignoring_corners(End[0],End[1])
         else:
-            UpdateBackTracking(LastBackTracked[0], LastBackTracked[1])
+            #UpdateBackTracking(LastBackTracked[0], LastBackTracked[1])
+            UpdateBackTracking_ignoring_corners(LastBackTracked[0], LastBackTracked[1])
 
 
     # Draw the grid and display routes
