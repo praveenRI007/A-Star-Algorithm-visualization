@@ -1,4 +1,5 @@
 import math
+from random import randrange, randint
 
 import pygame
 from tkinter import messagebox
@@ -7,8 +8,8 @@ import tkinter
 window1 = tkinter.Tk()
 window1.wm_withdraw()
 
-WIDTH = 20
-HEIGHT = 20
+WIDTH = 5
+HEIGHT = 5
 
 # This sets the margin between each cell
 MARGIN = 1
@@ -45,14 +46,26 @@ def getMinimumforDiscoveredList():
 def calc_manhattan_distance_h(x, y):
     return math.sqrt((abs(x-End[0]))**2 + (abs(y-End[1]))**2)
 
-gh = 37
-gw = 66
+gh = 130
+gw = 230
+
+#29,900
 
 TileTracker = [ [None]*gw for i in range(gh)]
+
+BlockerCount = 0
 
 for row in range(gh):
     for column in range(gw):
         TileTracker[row][column] = Tile(row, column)
+
+while BlockerCount < 9000:
+    tx = randint(0,129)
+    ty = randint(0,229)
+    if TileTracker[tx][ty].isBlock == False:
+        TileTracker[tx][ty].isBlock = True
+        BlockerCount += 1
+
 
 
 
