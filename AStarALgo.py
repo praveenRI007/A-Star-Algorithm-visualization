@@ -8,8 +8,8 @@ import tkinter
 window1 = tkinter.Tk()
 window1.wm_withdraw()
 
-WIDTH = 5
-HEIGHT = 5
+WIDTH = 40
+HEIGHT = 40
 
 # This sets the margin between each cell
 MARGIN = 1
@@ -46,10 +46,12 @@ def getMinimumforDiscoveredList():
 def calc_manhattan_distance_h(x, y):
     return math.sqrt((abs(x-End[0]))**2 + (abs(y-End[1]))**2)
 
-gh = 130
-gw = 230
+gh = 15
+gw = 26
 
 #29,900
+# gh = 130
+# gw = 230
 
 TileTracker = [ [None]*gw for i in range(gh)]
 
@@ -59,11 +61,11 @@ for row in range(gh):
     for column in range(gw):
         TileTracker[row][column] = Tile(row, column)
 
-while BlockerCount < 9000:
-    tx = randint(0,129)
-    ty = randint(0,229)
+while BlockerCount < 3:
+    tx = randint(0,gh - 1)
+    ty = randint(0,gw - 1)
     if TileTracker[tx][ty].isBlock == False:
-        TileTracker[tx][ty].isBlock = True
+        #TileTracker[tx][ty].isBlock = True
         BlockerCount += 1
 
 
@@ -580,10 +582,10 @@ def UpdateBackTracking(x,y):
     if (x+1)>=0 and (x+1)<gh and (y+1)>=0 and (y+1)<gw and TileTracker[x+1][y+1].isSearched == True:
         BackTrackList.append(TileTracker[x+1][y+1])
 
-    minE = min([i.Score for i in BackTrackList if i.IsBacktracked == False])
+    minE = min([i.g for i in BackTrackList if i.IsBacktracked == False])
 
     for j in BackTrackList:
-        if j.Score == minE and j.IsBacktracked == False:
+        if j.g == minE and j.IsBacktracked == False:
             TileTracker[j.x][j.y].IsBacktracked = True
             LastBackTracked = [j.x,j.y]
             return
@@ -649,10 +651,10 @@ def UpdateBackTracking_ignoring_corners(x,y):
         if not TileTracker[x+1][y].isBlock and not TileTracker[x][y+1].isBlock:
             BackTrackList.append(TileTracker[x+1][y+1])
 
-    minE = min([i.Score for i in BackTrackList if i.IsBacktracked == False])
+    minE = min([i.g for i in BackTrackList if i.IsBacktracked == False])
 
     for j in BackTrackList:
-        if j.Score == minE and j.IsBacktracked == False:
+        if j.g == minE and j.IsBacktracked == False:
             TileTracker[j.x][j.y].IsBacktracked = True
             LastBackTracked = [j.x,j.y]
             return
@@ -742,7 +744,7 @@ while not done:
                                  [(MARGIN + WIDTH) * column + MARGIN, (MARGIN + HEIGHT) * row + MARGIN, WIDTH, HEIGHT])
 
             if TileTracker[row][column].Discovered == True:
-                number_image = number_font.render(str(round(TileTracker[row][column].Score,1)), True, 'BLACK', 'WHITE')
+                number_image = number_font.render(str(round(TileTracker[row][column].g,1)), True, 'BLACK', 'WHITE')
 
                 if TileTracker[row][column].isSearched == True:
                     pygame.draw.rect(screen,'Red',[(MARGIN + WIDTH) * column + MARGIN,(MARGIN + HEIGHT) * row + MARGIN,WIDTH,HEIGHT])
