@@ -8,8 +8,7 @@ import tkinter
 window1 = tkinter.Tk()
 window1.wm_withdraw()
 
-WIDTH = 40
-HEIGHT = 40
+
 
 # This sets the margin between each cell
 MARGIN = 1
@@ -46,13 +45,15 @@ def getMinimumforDiscoveredList():
 def calc_manhattan_distance_h(x, y):
     return math.sqrt((abs(x-End[0]))**2 + (abs(y-End[1]))**2)
 
-gh = 15
-gw = 26
-maxBlockerCount = 0
+WIDTH = 5
+HEIGHT = 5
+#gh = 15
+#gw = 26
+maxBlockerCount = 9000
 
 #29,900
-# gh = 130
-# gw = 230
+gh = 130
+gw = 230
 
 TileTracker = [ [None]*gw for i in range(gh)]
 
