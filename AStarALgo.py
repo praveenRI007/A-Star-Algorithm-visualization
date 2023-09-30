@@ -48,6 +48,7 @@ def calc_manhattan_distance_h(x, y):
 
 gh = 15
 gw = 26
+maxBlockerCount = 0
 
 #29,900
 # gh = 130
@@ -61,11 +62,11 @@ for row in range(gh):
     for column in range(gw):
         TileTracker[row][column] = Tile(row, column)
 
-while BlockerCount < 3:
+while BlockerCount < maxBlockerCount:
     tx = randint(0,gh - 1)
     ty = randint(0,gw - 1)
     if TileTracker[tx][ty].isBlock == False:
-        #TileTracker[tx][ty].isBlock = True
+        TileTracker[tx][ty].isBlock = True
         BlockerCount += 1
 
 
