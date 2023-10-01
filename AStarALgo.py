@@ -1,12 +1,7 @@
 import math
 from random import randrange, randint
-
 import pygame
-from tkinter import messagebox
-import tkinter
 
-window1 = tkinter.Tk()
-window1.wm_withdraw()
 
 
 
