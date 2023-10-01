@@ -9,6 +9,11 @@ A* Path finding algorithm beautifully visualized in python with random wall gene
   <img src="AStar.gif" alt="animated" />
 </p>
 
+- Currently benchmarked @29,900 cells with 9000 blocker cells
+<p align="center">
+  <img src="AStar2.gif" alt="animated" />
+</p>
+
 
 
 ## Pseudocode
