@@ -3,6 +3,14 @@
 A* Path finding algorithm beautifully visualized in python with random wall generation feature.
 
 
+## A Star in Action
+
+<p align="center">
+  <img src="AStar.gif" alt="animated" />
+</p>
+
+
+
 ## Pseudocode
 
 1. Create a Grid consisting of cells.
